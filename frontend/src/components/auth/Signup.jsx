@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Eye, EyeOff, Mail, Lock, User, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext   } from "../context/AuthContext";
+import api from "../api/api";
 
-export default function SignUp() {
+export default function Signup() {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -12,19 +14,38 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+const { login } = useContext(AuthContext);
 
-    if (!name || !email || !password) {
-      setError("Please fill in all fields");
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
+  if (!name || !email || !password) {
+    setError("Please fill in all fields");
+    return;
+  }
+
+  try {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
+
+    const res = await api.post("/auth/signup", {
+      name,
+      email,
+      password,
+    });
+
+    // ✅ save user + token
+   login(res.data.user, res.data.token);
+
+    navigate("/dashboard");
+  } catch (err) {
+    setError(err.response?.data?.message || "Signup failed");
+  } finally {
     setLoading(false);
-  };
+  }
+};
+
+ 
 
   return (
     <div className="min-h-screen flex items-center justify-center  px-4">

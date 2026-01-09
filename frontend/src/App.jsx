@@ -6,73 +6,86 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useContext, useState } from "react";
+
 import Signup from "./components/auth/Signup";
 import Login from "./components/auth/Login";
 import ProjectList from "./components/project/ProjectList";
 import TaskList from "./components/Task/TaskList";
 import { AuthContext, AuthProvider } from "./components/context/AuthContext";
 
-function ProtectedLayout() {
+/* ---------------- Protected Dashboard ---------------- */
+
+function DashboardLayout() {
   const { user, logout } = useContext(AuthContext);
   const [selectedProject, setSelectedProject] = useState(null);
 
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
   return (
     <div className="p-4">
-      <div className="flex justify-between mb-4">
-        <h1 className="text-2xl">Welcome, {user.name}</h1>
+      <header className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-semibold">
+          Welcome, {user.name}
+        </h1>
+
         <button
           onClick={logout}
-          className="bg-red-600 text-white px-4 py-2 rounded"
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
           Logout
         </button>
-      </div>
+      </header>
 
-      <div className="flex gap-6">
+      <main className="flex gap-6">
         <ProjectList selectProject={setSelectedProject} />
-        {selectedProject && <TaskList projectId={selectedProject._id} />}
-      </div>
+        {selectedProject && (
+          <TaskList projectId={selectedProject._id} />
+        )}
+      </main>
     </div>
   );
 }
 
-function AuthRedirect({ children }) {
+/* ---------------- Auth Redirect ---------------- */
+
+function PublicOnly({ children }) {
   const { user } = useContext(AuthContext);
-  return user ? <Navigate to="/dashboard" /> : children;
+  return user ? <Navigate to="/dashboard" replace /> : children;
 }
+
+/* ---------------- App ---------------- */
 
 export default function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Auth Routes */}
+          {/* Public Auth Routes */}
           <Route
             path="/login"
             element={
-              <AuthRedirect>
+              <PublicOnly>
                 <Login />
-              </AuthRedirect>
+              </PublicOnly>
             }
           />
+
           <Route
             path="/signup"
             element={
-              <AuthRedirect>
+              <PublicOnly>
                 <Signup />
-              </AuthRedirect>
+              </PublicOnly>
             }
           />
 
-          {/* Protected Route */}
-          <Route path="/dashboard" element={<ProtectedLayout />} />
+          {/* Protected Dashboard */}
+          <Route path="/dashboard" element={<DashboardLayout />} />
 
-          {/* Default */}
-          <Route path="*" element={<Navigate to="/login" />} />
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
     </AuthProvider>
