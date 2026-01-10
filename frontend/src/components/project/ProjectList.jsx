@@ -1,37 +1,32 @@
-// src/components/Project/ProjectList.jsx
 import { useEffect, useState } from "react";
 import api from "../api/api";
+import ProjectForm from "./ProjectForm";
 
-export default function ProjectList({ selectProject }) {
+export default function ProjectList({ select }) {
   const [projects, setProjects] = useState([]);
 
-  const fetchProjects = async () => {
-    try {
-      const res = await api.get("/projects");
-      setProjects(res.data);
-    } catch (err) {
-      console.error(err);
-    }
+  const load = async () => {
+    const res = await api.get("/projects");
+    setProjects(res.data);
   };
 
   useEffect(() => {
-    fetchProjects();
+    load();
   }, []);
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl mb-2">My Projects</h2>
-      <ul>
-        {projects.map((p) => (
-          <li
-            key={p._id}
-            className="p-2 border rounded mb-2 cursor-pointer hover:bg-gray-100"
-            onClick={() => selectProject(p)}
-          >
-            {p.name}
-          </li>
-        ))}
-      </ul>
+    <div className="space-y-3">
+      <ProjectForm refresh={load} />
+
+      {projects.map(project => (
+        <div
+          key={project._id}
+          onClick={() => select(project)}
+          className="cursor-pointer px-3 py-2 rounded border border-zinc-800 hover:bg-zinc-900"
+        >
+          {project.name}
+        </div>
+      ))}
     </div>
   );
 }
