@@ -15,7 +15,7 @@ function AppContent() {
         path="/dashboard"
         element={user ? <Dashboard /> : <Navigate to="/login" replace />}
       />
-      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
     </Routes>
   );
@@ -25,6 +25,8 @@ export default function App() {
   return (
     <Router>
       <AuthProvider>
+  
+
         <AppContent />
       </AuthProvider>
     </Router>

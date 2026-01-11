@@ -156,7 +156,7 @@ const handleSubmit = async (e) => {
             <p className="mt-6 text-xs text-gray-400 text-center">
               Already have an account?{" "}
               <span
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/")}
                 className="font-semibold text-gray-700 cursor-pointer hover:underline"
               >
                 Login
