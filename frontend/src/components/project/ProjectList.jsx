@@ -105,34 +105,57 @@ export default function ProjectList({ select }) {
           "
         >
           {/* LEFT */}
-          {editingId === project._id ? (
-            <input
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") saveEdit(project._id);
-                if (e.key === "Escape") cancelEdit();
-              }}
-              autoFocus
-              className="
-                flex-1 bg-transparent
-                border-b border-slate-300
-                outline-none
-                focus:border-slate-600
-              "
-            />
-          ) : (
-            <span
-              onClick={() => select(project)}
-              className="
-                flex-1 cursor-pointer
-                font-medium text-slate-700
-                group-hover:text-slate-900
-              "
-            >
-              {project.name}
-            </span>
-          )}
+          <div
+            className="flex items-center gap-3 flex-1 cursor-pointer"
+            onClick={() => select(project)}
+          >
+            {/* LOGO */}
+            {project.logo ? (
+              <img
+                src={project.logo}
+                alt={project.name}
+                className="
+                  h-9 w-9 rounded-lg
+                  object-cover
+                  border border-slate-200
+                "
+              />
+            ) : (
+              <div
+                className="
+                  h-9 w-9 rounded-lg
+                  bg-indigo-500
+                  text-white font-semibold
+                  flex items-center justify-center
+                "
+              >
+                {project.name[0].toUpperCase()}
+              </div>
+            )}
+
+            {/* NAME / EDIT */}
+            {editingId === project._id ? (
+              <input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveEdit(project._id);
+                  if (e.key === "Escape") cancelEdit();
+                }}
+                autoFocus
+                className="
+                  flex-1 bg-transparent
+                  border-b border-slate-300
+                  outline-none
+                  focus:border-slate-600
+                "
+              />
+            ) : (
+              <span className="font-medium text-slate-700 group-hover:text-slate-900">
+                {project.name}
+              </span>
+            )}
+          </div>
 
           {/* ACTIONS */}
           <div className="flex gap-3 ml-3 opacity-0 group-hover:opacity-100 transition">
