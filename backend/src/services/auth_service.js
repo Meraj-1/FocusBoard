@@ -4,7 +4,7 @@ import { generateToken } from "../utils/generateToken.js";
 import mongoose from "mongoose";
 
 export const signupService = async ({ name, email, password }) => {
-  mongoose.connect(process.env.MONGODB_URI);
+  mongoose.connect(process.env.MONGO_URI);
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error("USER_ALREADY_EXISTS");
