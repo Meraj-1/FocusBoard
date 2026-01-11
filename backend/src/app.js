@@ -6,12 +6,12 @@ app.use(express.json());
 import cors from "cors";
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173","https://focus-board-frontend.vercel.app/"],
   credentials: true, 
 }));
 
 app.get("/", (req, res) => {
-  res.send("Backend is running 🚀");
+  res.send("Backend is running");
 });
 
 app.use("/api/auth", authRoutes);
