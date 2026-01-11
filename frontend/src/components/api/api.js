@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: ["http://localhost:8000/api", "https://vercel.com/meraj-1s-projects/focus-board"],
 });
 
 api.interceptors.request.use((config) => {
