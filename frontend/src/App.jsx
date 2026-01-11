@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./components/context/AuthContext";
 import Home from "./components/pages/Home";
 import Signup from "./components/auth/Signup";
@@ -10,15 +10,13 @@ function AppContent() {
   const { user } = useContext(AuthContext);
 
   return (
-    <Routes>
-      {user ? (
-        <Route path="/*" element={<Dashboard />} />
-      ) : (
-        <>
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-        </>
-      )}
+       <Routes>
+      <Route
+        path="/dashboard"
+        element={user ? <Dashboard /> : <Navigate to="/login" replace />}
+      />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
     </Routes>
   );
 }
