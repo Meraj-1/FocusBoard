@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
 import User from "../models/user_model.js";
 import { generateToken } from "../utils/generateToken.js";
+import mongoose from "mongoose";
 
 export const signupService = async ({ name, email, password }) => {
+  mongoose.connect(process.env.MONGODB_URI);
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error("USER_ALREADY_EXISTS");
