@@ -8,51 +8,99 @@ export default function Dashboard() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   return (
-    <div className="h-full bg-zinc-950 text-white p-4">
-      
-      {/* HEADER */}
- <div className="flex items-center justify-between mb-6">
-  <div className="flex items-center gap-3">
-    <div className="h-9 w-9 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-medium">
-      {user.name.charAt(0).toUpperCase()}
-    </div>
+    <div className="h-screen bg-zinc-900 text-zinc-100 flex flex-col">
 
-    <div>
-      <h1 className="text-lg font-semibold leading-none">FocusBoard</h1>
-      <p className="text-sm text-zinc-400">{user.name}</p>
-    </div>
-  </div>
+      {/* TOP BAR */}
+      <header className="
+        h-16 flex items-center justify-between
+        px-6
+        border-b border-zinc-800
+        bg-zinc-900/80 backdrop-blur
+      ">
+        <div className="flex items-center gap-4">
+          <div className="
+            h-10 w-10 rounded-xl
+            bg-indigo-600
+            flex items-center justify-center
+            font-bold text-white
+          ">
+            {user.name.charAt(0).toUpperCase()}
+          </div>
 
-  <button
-    onClick={logout}
-    className="px-4 py-2 text-sm rounded-md border border-zinc-700
-               hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/40
-               transition"
-  >
-    Logout
-  </button>
-</div>
-
-
-      {/* MAIN LAYOUT */}
-      <div className="flex gap-4 h-[90%]">
-
-        {/* LEFT: PROJECTS */}
-        <div className="w-[25%] border border-zinc-800 rounded-lg p-3">
-          <h2 className="mb-3 text-lg opacity-80">Projects</h2>
-          <ProjectList select={setSelectedProject} />
+          <div>
+            <h1 className="text-sm font-semibold tracking-wide">
+              FocusBoard
+            </h1>
+            <p className="text-xs text-zinc-400">
+              Welcome back, {user.name}
+            </p>
+          </div>
         </div>
 
-        {/* RIGHT: TASKS */}
-        <div className="flex-1 border border-zinc-800 rounded-lg p-4">
-          {selectedProject ? (
-            <ProjectDetail project={selectedProject} />
-          ) : (
-            <div className="h-full flex items-center justify-center opacity-50">
-              Select a project to view tasks
-            </div>
-          )}
-        </div>
+        <button
+          onClick={logout}
+          className="
+            text-sm px-4 py-2 rounded-lg
+            border border-zinc-700
+            hover:bg-red-500/10
+            hover:text-red-400
+            hover:border-red-500/40
+            transition
+          "
+        >
+          Logout
+        </button>
+      </header>
+
+      {/* MAIN */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* SIDEBAR */}
+        <aside className="
+          w-72 p-4
+          border-r border-zinc-800
+          bg-zinc-900
+          flex flex-col
+        ">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-4">
+            Projects
+          </h2>
+
+          <div className="flex-1 overflow-y-auto">
+            <ProjectList select={setSelectedProject} />
+          </div>
+        </aside>
+
+        {/* CONTENT */}
+        <main className="
+          flex-1 p-6
+          bg-zinc-950
+          overflow-y-auto
+        ">
+          <div className="
+            h-full rounded-xl
+            border border-zinc-800
+            bg-zinc-900
+            p-6
+          ">
+            {selectedProject ? (
+              <ProjectDetail project={selectedProject} />
+            ) : (
+              <div className="
+                h-full flex flex-col
+                items-center justify-center
+                text-zinc-400
+              ">
+                <p className="text-lg font-medium">
+                  No project selected
+                </p>
+                <p className="text-sm opacity-70 mt-1">
+                  Choose a project from the sidebar to get started
+                </p>
+              </div>
+            )}
+          </div>
+        </main>
 
       </div>
     </div>
