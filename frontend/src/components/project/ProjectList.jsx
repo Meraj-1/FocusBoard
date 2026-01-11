@@ -9,15 +9,14 @@ export default function ProjectList({ select }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Load projects
   const load = async () => {
     try {
       setLoading(true);
+      setError("");
       const res = await api.get("/projects");
       setProjects(res.data);
-    } catch (err) {
+    } catch {
       setError("Failed to load projects.");
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -40,49 +39,72 @@ export default function ProjectList({ select }) {
   const saveEdit = async (projectId) => {
     if (!editName.trim()) return;
 
+    const previous = projects;
+
     try {
-      // Optimistic UI update
       setProjects((prev) =>
-        prev.map((p) => (p._id === projectId ? { ...p, name: editName } : p))
+        prev.map((p) =>
+          p._id === projectId ? { ...p, name: editName } : p
+        )
       );
       setEditingId(null);
       await api.put(`/projects/${projectId}`, { name: editName });
-    } catch (err) {
+    } catch {
+      setProjects(previous);
       setError("Failed to update project.");
-      console.error(err);
-      load(); // revert changes if failed
     }
   };
 
   const remove = async (projectId) => {
-    if (!window.confirm("Delete this project and all tasks?")) return;
+    if (!confirm("Delete this project and all tasks?")) return;
+
+    const previous = projects;
 
     try {
-      // Optimistic removal
       setProjects((prev) => prev.filter((p) => p._id !== projectId));
       await api.delete(`/projects/${projectId}`);
-    } catch (err) {
+    } catch {
+      setProjects(previous);
       setError("Failed to delete project.");
-      console.error(err);
-      load(); // reload in case of failure
     }
   };
 
-  if (loading) return <p>Loading projects...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <ProjectForm refresh={load} />
 
-      {projects.length === 0 && <p>No projects found.</p>}
+      {loading && (
+        <p className="text-sm text-slate-400 animate-pulse">
+          Loading projects…
+        </p>
+      )}
+
+      {error && (
+        <p className="text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">
+          {error}
+        </p>
+      )}
+
+      {projects.length === 0 && !loading && (
+        <p className="text-sm text-slate-400">
+          No projects yet. Create your first one ✨
+        </p>
+      )}
 
       {projects.map((project) => (
         <div
           key={project._id}
-          className="flex items-center justify-between px-3 py-2 rounded border border-zinc-800 hover:bg-zinc-900"
+          className="
+            group flex items-center justify-between
+            px-4 py-3 rounded-xl
+            bg-white/70 backdrop-blur
+            border border-slate-200
+            shadow-sm
+            hover:shadow-md hover:-translate-y-[1px]
+            transition
+          "
         >
-          {/* LEFT SIDE (Name / Input) */}
+          {/* LEFT */}
           {editingId === project._id ? (
             <input
               value={editName}
@@ -91,34 +113,40 @@ export default function ProjectList({ select }) {
                 if (e.key === "Enter") saveEdit(project._id);
                 if (e.key === "Escape") cancelEdit();
               }}
-              className="bg-transparent outline-none flex-1"
               autoFocus
-              aria-label={`Edit project ${project.name}`}
+              className="
+                flex-1 bg-transparent
+                border-b border-slate-300
+                outline-none
+                focus:border-slate-600
+              "
             />
           ) : (
             <span
               onClick={() => select(project)}
-              className="cursor-pointer flex-1"
-              title="Click to select project"
+              className="
+                flex-1 cursor-pointer
+                font-medium text-slate-700
+                group-hover:text-slate-900
+              "
             >
               {project.name}
             </span>
           )}
 
-          {/* RIGHT SIDE (Actions) */}
-          <div className="flex gap-2 text-sm opacity-70 ml-2">
+          {/* ACTIONS */}
+          <div className="flex gap-3 ml-3 opacity-0 group-hover:opacity-100 transition">
             <button
-              title="Edit"
               onClick={() => startEdit(project)}
-              className="hover:opacity-100"
+              title="Edit"
+              className="text-slate-400 hover:text-slate-700"
             >
               ✏️
             </button>
-
             <button
-              title="Delete"
               onClick={() => remove(project._id)}
-              className="hover:text-red-400"
+              title="Delete"
+              className="text-slate-400 hover:text-red-500"
             >
               🗑
             </button>
