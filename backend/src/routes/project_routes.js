@@ -5,6 +5,7 @@ import { projectOwnerOnly } from "../middlewares/projectOwner_middleware.js";
 import { createProject, getMyProjects, editProject, deleteProject } from "../controllers/project_controller.js";
 import { getTasks, createTask,updateTask, deleteTask } from "../controllers/task_controller.js";
 import router from "./auth_routes.js";
+import { upload } from "../middlewares/upload.js";
 
 router.post("/", authMiddleware, createProject);
 router.get("/", authMiddleware, getMyProjects);
@@ -15,6 +16,7 @@ router.delete("/:projectId", authMiddleware, projectOwnerOnly, deleteProject);
 router.get(
   "/:projectId/tasks",
   authMiddleware,
+  upload.single("logo"),
   projectOwnerOnly,
   getTasks
 );
