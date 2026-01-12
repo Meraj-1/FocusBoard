@@ -11,10 +11,11 @@ function AppContent() {
 
   return (
        <Routes>
-      <Route
-        path="/dashboard"
-        element={user ? <Dashboard /> : <Navigate to="/login" replace />}
-      />
+   <Route
+  path="/dashboard"
+  element={user ? <Dashboard /> : <Navigate to="/login" />}
+/>
+
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
     </Routes>

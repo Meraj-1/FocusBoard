@@ -1,27 +1,38 @@
-import { createContext, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user"))
-  );
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
-  const login = (userData, token) => {
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
+      setToken(storedToken);
+    }
+  }, []);
+
+  const login = (userData, tokenData) => {
     localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("token", token);
+    localStorage.setItem("token", tokenData);
+
+    // 🔥 YAHI MISSING THA
     setUser(userData);
+    setToken(tokenData);
   };
 
   const logout = () => {
     localStorage.clear();
     setUser(null);
-    Navigate("/signup")
+    setToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

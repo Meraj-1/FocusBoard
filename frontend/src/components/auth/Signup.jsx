@@ -28,19 +28,24 @@ const handleSubmit = async (e) => {
   try {
     setLoading(true);
 
-    const res = await api.post("/auth/signup", {
+    const res = await api.post("/signup", {
       name,
       email,
       password,
     });
 
     // ✅ save user + token
-   login(res.data.user, res.data.token);
+  login(res.data.data.user, res.data.data.token);
+
 
     navigate("/dashboard");
   } catch (err) {
-    setError(err.response?.data?.message || "Signup failed");
-  } finally {
+  console.log("FULL ERROR 👉", err);
+  console.log("RESPONSE 👉", err.response);
+  console.log("DATA 👉", err.response?.data);
+
+  setError(err.response?.data?.message || "Signup failed");
+} finally {
     setLoading(false);
   }
 };
