@@ -15,9 +15,7 @@ export default function TaskForm({ projectId, refresh }) {
     try {
       setLoading(true);
       setError("");
-      await api.post(`/projects/${projectId}/tasks`, {
-        title: title.trim(),
-      });
+      await api.post(`/projects/${projectId}/tasks`, { title: title.trim() });
       setTitle("");
       refresh();
     } catch {
@@ -27,83 +25,72 @@ export default function TaskForm({ projectId, refresh }) {
     }
   };
 
+  const isMax = title.length >= MAX_LENGTH;
+
   return (
     <form
       onSubmit={submit}
-      className="
-        mb-4 rounded-xl
-        border border-zinc-800
-        bg-zinc-900
-        p-4
-        transition
-        focus-within:border-zinc-600
-      "
+      className="mb-4 rounded-xl border border-zinc-800 bg-zinc-900 p-4 transition-colors duration-200 focus-within:border-indigo-500"
     >
-      {/* LABEL */}
+      {/* LABEL + COUNTER */}
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs uppercase tracking-wider text-zinc-400">
-          Add task
+          Add Task
         </p>
-        <span className="text-xs text-zinc-500">
+        <span
+          className={`text-xs transition-colors duration-200 ${
+            isMax ? "text-red-400" : "text-zinc-500"
+          }`}
+        >
           {title.length}/{MAX_LENGTH}
         </span>
       </div>
 
-      {/* INPUT ROW */}
+      {/* INPUT + BUTTON */}
       <div className="flex items-center gap-3">
         <input
           value={title}
           maxLength={MAX_LENGTH}
           autoFocus
+          placeholder="What needs to be done?"
+          disabled={loading}
+          aria-label="Task title"
           onChange={(e) => {
             setTitle(e.target.value);
             if (error) setError("");
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && (e.metaKey || !e.shiftKey)) {
-              submit();
-            }
+            if (e.key === "Enter" && !e.shiftKey) submit();
           }}
-          placeholder="What needs to be done?"
-          disabled={loading}
-          className="
-            flex-1 bg-transparent
-            outline-none
-            text-sm
-            placeholder:text-zinc-500
-            disabled:opacity-60
-          "
+          className={`
+            flex-1 bg-transparent outline-none text-sm placeholder:text-zinc-500 disabled:opacity-60
+            border-b border-transparent focus:border-b-2 focus:border-indigo-500 transition-all
+          `}
         />
 
         <button
           type="submit"
           disabled={loading || !title.trim()}
-          className="
-            px-3 py-1.5 rounded-lg text-sm
-            border border-zinc-700
-            hover:bg-zinc-800
-            focus:outline-none focus:ring-1 focus:ring-zinc-600
-            disabled:opacity-40
+          aria-label="Add task"
+          className={`
+            px-3 py-1.5 rounded-lg text-sm font-medium border border-zinc-700
+            hover:bg-indigo-600 hover:text-white
+            focus:outline-none focus:ring-1 focus:ring-indigo-500
+            disabled:opacity-40 disabled:cursor-not-allowed
             transition
-          "
+          `}
         >
-          {loading ? (
-            <span className="animate-pulse">Adding…</span>
-          ) : (
-            "Add"
-          )}
+          {loading ? <span className="animate-pulse">Adding…</span> : "Add"}
         </button>
       </div>
 
       {/* HINT / ERROR */}
       <div className="mt-2 flex justify-between text-xs">
-        <span className="text-zinc-500">
-          Press Enter to add • ⌘Enter also works
+        <span className="text-zinc-500 animate-fade-in">
+          Press Enter to add • Shift+Enter for new line
         </span>
         {error && (
-          <span className="text-red-400 animate-fade-in">
-            {error}
-          </span>
+          <span className="text-red-400 animate-fade-in">{error}</span>
         )}
       </div>
     </form>
