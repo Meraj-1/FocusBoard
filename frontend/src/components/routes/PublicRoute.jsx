@@ -2,10 +2,10 @@ import { Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "./components/context/AuthContext";
 
-export default function ProtectedRoute({ children }) {
+export default function PublicRoute({ children }) {
   const { user, loading } = useContext(AuthContext);
 
-  if (loading) return null; // ya loader
+  if (loading) return null;
 
-  return user ? children : <Navigate to="/login" replace />;
+  return user ? <Navigate to="/dashboard" replace /> : children;
 }
