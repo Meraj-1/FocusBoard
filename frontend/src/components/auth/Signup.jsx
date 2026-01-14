@@ -1,11 +1,12 @@
 import { useState, useContext } from "react";
 import { Eye, EyeOff, Mail, Lock, User, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext   } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import api from "../api/api";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,49 +15,34 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-const { login } = useContext(AuthContext);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
+    if (!name || !email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
 
-  if (!name || !email || !password) {
-    setError("Please fill in all fields");
-    return;
-  }
+    try {
+      setLoading(true);
+      const res = await api.post("/signup", { name, email, password });
 
-  try {
-    setLoading(true);
-
-    const res = await api.post("/signup", {
-      name,
-      email,
-      password,
-    });
-
-    // ✅ save user + token
-  login(res.data.data.user, res.data.data.token);
-
-
-    navigate("/dashboard");
-  } catch (err) {
-  console.log("FULL ERROR 👉", err);
-  console.log("RESPONSE 👉", err.response);
-  console.log("DATA 👉", err.response?.data);
-
-  setError(err.response?.data?.message || "Signup failed");
-} finally {
-    setLoading(false);
-  }
-};
-
- 
+      // Save user + token
+      login(res.data.data.user, res.data.data.token);
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Signup Error:", err.response?.data || err);
+      setError(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center  px-4">
-      {/* CENTER CARD */}
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-4xl bg-white grid grid-cols-1 md:grid-cols-2 overflow-hidden">
-        
+
         {/* LEFT – SIGNUP FORM */}
         <div className="flex items-center justify-center px-8 py-12">
           <div className="w-full max-w-sm">
@@ -67,23 +53,15 @@ const handleSubmit = async (e) => {
             </div>
 
             <p className="text-sm text-gray-400 mb-1">GET STARTED 🚀</p>
-            <h1 className="text-2xl font-semibold text-gray-800 mb-2">
-              Create your account
-            </h1>
-            <p className="text-sm text-gray-400 mb-8">
-              Join us and start managing everything in one place.
-            </p>
+            <h1 className="text-2xl font-semibold text-gray-800 mb-2">Create your account</h1>
+            <p className="text-sm text-gray-400 mb-8">Join us and start managing everything in one place.</p>
 
-            {/* FORM */}
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name */}
               <div>
                 <label className="text-xs font-medium text-gray-400">NAME</label>
                 <div className="relative mt-2">
-                  <User
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
+                  <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
                     placeholder="John Doe"
@@ -98,10 +76,7 @@ const handleSubmit = async (e) => {
               <div>
                 <label className="text-xs font-medium text-gray-400">EMAIL</label>
                 <div className="relative mt-2">
-                  <Mail
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
+                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="email"
                     placeholder="johndoe@email.com"
@@ -116,10 +91,7 @@ const handleSubmit = async (e) => {
               <div>
                 <label className="text-xs font-medium text-gray-400">PASSWORD</label>
                 <div className="relative mt-2">
-                  <Lock
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
+                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
@@ -137,27 +109,18 @@ const handleSubmit = async (e) => {
               </div>
 
               {/* Error */}
-              {error && (
-                <p className="text-xs text-red-500 bg-red-50 p-2 rounded-md">
-                  {error}
-                </p>
-              )}
+              {error && <p className="text-xs text-red-500 bg-red-50 p-2 rounded-md">{error}</p>}
 
-              {/* Button */}
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full rounded-lg bg-gray-800 py-3 text-sm font-medium text-white hover:bg-gray-900 transition flex items-center justify-center gap-2 disabled:opacity-70"
               >
-                {loading ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  "CREATE ACCOUNT →"
-                )}
+                {loading ? <Loader2 size={16} className="animate-spin" /> : "CREATE ACCOUNT →"}
               </button>
             </form>
 
-            {/* Login */}
             <p className="mt-6 text-xs text-gray-400 text-center">
               Already have an account?{" "}
               <span
@@ -171,7 +134,7 @@ const handleSubmit = async (e) => {
         </div>
 
         {/* RIGHT – IMAGE */}
-        <div className="hidden md:flex items-center justify-center ">
+        <div className="hidden md:flex items-center justify-center">
           <img
             src="/assets/pattern-c.png"
             alt="Signup illustration"

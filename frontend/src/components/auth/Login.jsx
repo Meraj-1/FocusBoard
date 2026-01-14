@@ -27,11 +27,9 @@ export default function Login() {
       setLoading(true);
       const res = await api.post("/auth/login", { email, password });
 
-      console.log("LOGIN SUCCESS 👉", res.data);
       login(res.data.user, res.data.token);
       navigate("/dashboard");
     } catch (err) {
-      console.log("LOGIN ERROR OBJECT 👉", err);
       if (err.response) setError(err.response.data.message || "Login failed");
       else if (err.request) setError("Server not reachable. Check backend & CORS.");
       else setError(err.message);
@@ -43,7 +41,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-50 px-4">
       <div className="w-full max-w-5xl bg-white rounded-lg shadow overflow-hidden grid grid-cols-1 md:grid-cols-2">
-        
+
         {/* LEFT – LOGIN FORM */}
         <div className="flex flex-col justify-center px-8 py-12">
           <div className="max-w-sm w-full mx-auto">
@@ -54,14 +52,9 @@ export default function Login() {
             </div>
 
             <p className="text-sm text-gray-400 mb-1">WELCOME BACK 👋</p>
-            <h1 className="text-2xl font-semibold text-gray-800 mb-2">
-              Login to your account
-            </h1>
-            <p className="text-sm text-gray-400 mb-8">
-              Enter your credentials to continue.
-            </p>
+            <h1 className="text-2xl font-semibold text-gray-800 mb-2">Login to your account</h1>
+            <p className="text-sm text-gray-400 mb-8">Enter your credentials to continue.</p>
 
-            {/* FORM */}
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email */}
               <div>

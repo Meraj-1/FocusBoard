@@ -1,35 +1,56 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, AuthContext } from "./components/context/AuthContext";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./components/context/AuthContext";
+
 import Home from "./components/pages/Home";
 import Signup from "./components/auth/Signup";
 import Login from "./components/auth/Login";
 import Dashboard from "./components/pages/Dashboard";
-import { useContext } from "react";
 
-function AppContent() {
-  const { user } = useContext(AuthContext);
+import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 
-  return (
-       <Routes>
-   <Route
-  path="/dashboard"
-  element={user ? <Dashboard /> : <Navigate to="/login" />}
-/>
-
-      <Route path="/" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-    </Routes>
-  );
-}
-
-export default function App() {
+function App() {
   return (
     <Router>
       <AuthProvider>
-  
+        <Routes>
 
-        <AppContent />
+          {/* Public routes */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <Signup />
+              </PublicRoute>
+            }
+          />
+
+          {/* Protected route */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Optional homepage */}
+          <Route path="/" element={<Home />} />
+
+        </Routes>
       </AuthProvider>
     </Router>
   );
 }
+
+export default App;
