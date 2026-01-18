@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api/api";
+import { Loader2, ImagePlus } from "lucide-react";
 
 export default function ProjectForm({ refresh }) {
   const [name, setName] = useState("");
@@ -12,10 +13,7 @@ export default function ProjectForm({ refresh }) {
     e.preventDefault();
     if (loading) return;
 
-    if (!name.trim()) {
-      setError("Project name required");
-      return;
-    }
+    if (!name.trim()) return setError("Project name required");
 
     try {
       setLoading(true);
@@ -25,39 +23,39 @@ export default function ProjectForm({ refresh }) {
       formData.append("name", name.trim());
       if (logo) formData.append("logo", logo);
 
-      await api.post("/projects", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await api.post("/projects", formData);
 
-      // reset
       setName("");
       setLogo(null);
       setPreview(null);
       refresh();
     } catch (err) {
-      setError(
-        err?.response?.data?.message || "Failed to create project"
-      );
+      setError(err.response?.data?.message || "Failed to create project");
     } finally {
       setLoading(false);
     }
   };
 
   const handleFile = (file) => {
-    if (!file.type.startsWith("image/")) {
-      setError("Only image files allowed");
-      return;
-    }
+    if (!file) return;
+
+    if (!file.type.startsWith("image/"))
+      return setError("Only image files allowed");
+
+    if (file.size > 1024 * 1024)
+      return setError("Logo must be under 1MB");
+
     setLogo(file);
     setPreview(URL.createObjectURL(file));
   };
 
   return (
-    <form onSubmit={submit} className="mb-4 space-y-2">
-      
+    <form
+      onSubmit={submit}
+      className="mb-4 space-y-3 p-3 rounded-xl bg-zinc-900/70 backdrop-blur border border-zinc-800 shadow"
+    >
       {/* NAME */}
       <input
-        autoFocus
         value={name}
         onChange={(e) => {
           setName(e.target.value);
@@ -65,31 +63,15 @@ export default function ProjectForm({ refresh }) {
         }}
         placeholder="Create new project..."
         disabled={loading}
-        className="
-          w-full px-3 py-2
-          bg-zinc-900 text-white
-          border border-zinc-800 rounded-lg
-          outline-none
-          focus:border-zinc-600
-          placeholder:text-zinc-500
-        "
+        className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500 transition"
       />
 
       {/* LOGO UPLOAD */}
-      <div className="flex items-center gap-3">
-        <label className="
-          px-3 py-1.5 text-sm rounded-md cursor-pointer
-          border border-zinc-700
-          hover:bg-zinc-800 transition
-        ">
-          Upload Logo
-          <input
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={(e) => handleFile(e.target.files[0])}
-          />
-        </label>
+      <label className="flex items-center justify-between gap-3 cursor-pointer text-xs border border-zinc-700 rounded-lg px-3 py-2 hover:border-indigo-500 hover:bg-zinc-800/60 transition">
+        <div className="flex items-center gap-2">
+          <ImagePlus size={14} />
+          <span>{preview ? "Change logo" : "Upload logo"}</span>
+        </div>
 
         {preview && (
           <img
@@ -98,30 +80,26 @@ export default function ProjectForm({ refresh }) {
             className="h-8 w-8 rounded-md object-cover border border-zinc-700"
           />
         )}
-      </div>
+
+        <input
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => handleFile(e.target.files[0])}
+        />
+      </label>
 
       {/* SUBMIT */}
       <button
         type="submit"
         disabled={loading}
-        className="
-          w-full px-4 py-2 rounded-lg
-          border border-zinc-700
-          hover:bg-zinc-800
-          disabled:opacity-50
-          transition
-        "
+        className="w-full flex items-center justify-center gap-2 text-sm rounded-lg py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium hover:opacity-90 disabled:opacity-60 transition"
       >
-        {loading ? "Creating..." : "Add Project"}
+        {loading ? <Loader2 size={16} className="animate-spin" /> : "Add Project"}
       </button>
 
       {/* ERROR */}
-      {error && (
-        <p className="text-xs text-red-400">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-xs text-red-400">{error}</p>}
     </form>
   );
 }
-
