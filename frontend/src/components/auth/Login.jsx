@@ -10,6 +10,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -18,115 +19,146 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    if (!email || !password) {
-      setError("Please enter email and password");
-      return;
-    }
+    if (!email || !password) return setError("Please fill all fields");
 
     try {
       setLoading(true);
       const res = await api.post("/auth/login", { email, password });
 
-      login(res.data.user, res.data.token);
+      login(res.data.user, res.data.token, remember);
       navigate("/dashboard");
     } catch (err) {
-      if (err.response) setError(err.response.data.message || "Login failed");
-      else if (err.request) setError("Server not reachable. Check backend & CORS.");
-      else setError(err.message);
+      setError(
+        err.response?.data?.message ||
+          "Login failed. Please check credentials."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-50 px-4">
-      <div className="w-full max-w-5xl bg-white rounded-lg shadow overflow-hidden grid grid-cols-1 md:grid-cols-2">
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 text-zinc-100">
+      <div className="w-full max-w-5xl rounded-2xl overflow-hidden shadow-2xl border border-zinc-800 grid md:grid-cols-2">
 
-        {/* LEFT – LOGIN FORM */}
-        <div className="flex flex-col justify-center px-8 py-12">
-          <div className="max-w-sm w-full mx-auto">
-            {/* Brand */}
+        {/* LEFT */}
+        <div className="p-10 flex flex-col justify-center backdrop-blur bg-zinc-900/80">
+          <div className="max-w-sm mx-auto w-full">
+
+            {/* BRAND */}
             <div className="flex items-center gap-2 mb-8">
-              <div className="w-9 h-9 rounded-lg bg-orange-200" />
-              <span className="text-lg font-semibold text-gray-700">uBrand</span>
+              <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500" />
+              <span className="text-lg font-semibold tracking-wide">FocusBoard</span>
             </div>
 
-            <p className="text-sm text-gray-400 mb-1">WELCOME BACK 👋</p>
-            <h1 className="text-2xl font-semibold text-gray-800 mb-2">Login to your account</h1>
-            <p className="text-sm text-gray-400 mb-8">Enter your credentials to continue.</p>
+            <p className="text-xs text-zinc-400 uppercase tracking-wider mb-1">
+              Welcome back
+            </p>
+            <h1 className="text-2xl font-semibold mb-2">
+              Sign in to your workspace
+            </h1>
+            <p className="text-sm text-zinc-500 mb-8">
+              Manage your projects and stay productive.
+            </p>
 
+            {/* FORM */}
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
+
+              {/* EMAIL */}
               <div>
-                <label className="text-xs font-medium text-gray-400">EMAIL</label>
+                <label className="text-xs text-zinc-400">Email</label>
                 <div className="relative mt-2">
-                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
                   <input
                     type="email"
-                    placeholder="johndoe@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-lg bg-gray-100 pl-9 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-gray-300"
+                    placeholder="you@example.com"
+                    className="w-full rounded-lg bg-zinc-800 pl-9 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
-              {/* Password */}
+              {/* PASSWORD */}
               <div>
-                <label className="text-xs font-medium text-gray-400">PASSWORD</label>
+                <label className="text-xs text-zinc-400">Password</label>
                 <div className="relative mt-2">
-                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full rounded-lg bg-gray-100 pl-9 pr-10 py-3 text-sm outline-none focus:ring-2 focus:ring-gray-300"
+                    className="w-full rounded-lg bg-zinc-800 pl-9 pr-10 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-400"
+                    className="absolute inset-y-0 right-3 flex items-center text-zinc-500 hover:text-white"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
 
-              {/* Error */}
-              {error && <p className="text-xs text-red-500 bg-red-50 p-2 rounded">{error}</p>}
+              {/* REMEMBER + FORGOT */}
+              <div className="flex items-center justify-between text-xs text-zinc-500">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={() => setRemember(!remember)}
+                    className="accent-indigo-500"
+                  />
+                  Remember me
+                </label>
+                <span
+                  onClick={() => navigate("/forgot")}
+                  className="hover:text-indigo-400 cursor-pointer"
+                >
+                  Forgot password?
+                </span>
+              </div>
 
-              {/* Button */}
+              {/* ERROR */}
+              {error && (
+                <p className="text-xs text-red-400 bg-red-500/10 p-2 rounded">
+                  {error}
+                </p>
+              )}
+
+              {/* BUTTON */}
               <button
-                type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-gray-800 py-3 text-sm font-medium text-white hover:bg-gray-900 transition flex items-center justify-center gap-2 disabled:opacity-70"
+                className="w-full py-3 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-sm font-medium text-white hover:opacity-90 transition flex items-center justify-center gap-2"
               >
-                {loading ? <Loader2 className="animate-spin" size={16} /> : "LOGIN →"}
+                {loading ? <Loader2 className="animate-spin" size={16} /> : "Login"}
               </button>
             </form>
 
-            {/* Signup link */}
-            <p className="mt-6 text-xs text-gray-400 text-center">
+            {/* SIGNUP */}
+            <p className="mt-6 text-xs text-zinc-500 text-center">
               Don’t have an account?{" "}
               <span
                 onClick={() => navigate("/signup")}
-                className="font-semibold text-gray-700 cursor-pointer hover:underline"
+                className="text-indigo-400 hover:underline cursor-pointer"
               >
-                Sign up
+                Create one
               </span>
             </p>
           </div>
         </div>
 
-        {/* RIGHT – IMAGE */}
-        <div className="hidden md:flex items-center justify-center">
-          <img
-            src="/assets/pattern-c.png"
-            alt="Login illustration"
-            className="w-full h-full object-cover"
-          />
+        {/* RIGHT */}
+        <div className="hidden md:flex bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 items-center justify-center relative">
+          <div className="text-center text-white space-y-3 px-6">
+            <h2 className="text-3xl font-bold">Stay Focused</h2>
+            <p className="text-sm opacity-80">
+              Track progress, manage tasks, and build better habits.
+            </p>
+          </div>
         </div>
+
       </div>
     </div>
   );
