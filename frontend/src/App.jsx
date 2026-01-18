@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/context/AuthContext";
-
+import { Navigate } from "react-router-dom";
 import Home from "./components/pages/Home";
 import Signup from "./components/auth/Signup";
 import Login from "./components/auth/Login";
 import Dashboard from "./components/pages/Dashboard";
 
-import ProtectedRoute from "./ProtectedRoute";
-import PublicRoute from "./PublicRoute";
+import ProtectedRoute from "./components/routes/ProtectedRoute"
+import PublicRoute from "./components/routes/PublicRoute";
 
 function App() {
   return (
@@ -45,7 +45,7 @@ function App() {
           />
 
           {/* Optional homepage */}
-          <Route path="/" element={<Home />} />
+         <Route path="/" element={<Navigate to="/login" />} />
 
         </Routes>
       </AuthProvider>

@@ -23,7 +23,7 @@ export default function ProjectForm({ refresh }) {
       formData.append("name", name.trim());
       if (logo) formData.append("logo", logo);
 
-      await api.post("/projects", formData);
+      await api.post("/api/projects", formData);
 
       setName("");
       setLogo(null);
@@ -31,6 +31,7 @@ export default function ProjectForm({ refresh }) {
       refresh();
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create project");
+      console.log(err.message);
     } finally {
       setLoading(false);
     }
