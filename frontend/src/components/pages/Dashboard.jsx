@@ -13,8 +13,8 @@ export default function Dashboard() {
     <div className="h-screen flex flex-col bg-zinc-950 text-zinc-100">
 
       {/* TOP BAR */}
-      <header className="sticky top-0 z-20 flex items-center justify-between h-16 px-4 md:px-6 bg-zinc-900/90 backdrop-blur border-b border-zinc-800 shadow-sm">
-        {/* Left: App Logo */}
+      <header className="sticky top-0 z-20 flex items-center justify-between h-16 px-4 md:px-6 bg-zinc-900/90 backdrop-blur border-b border-zinc-800 shadow-md">
+
         <div className="flex items-center gap-3">
           <button
             className="md:hidden p-2 rounded hover:bg-zinc-800/50 transition"
@@ -26,18 +26,23 @@ export default function Dashboard() {
           <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-md">
             F
           </div>
+
           <div className="leading-tight">
             <h1 className="text-sm font-semibold tracking-wide">FocusBoard</h1>
-            <p className="text-xs text-zinc-400">Productivity workspace</p>
+            <p className="text-xs text-zinc-400">Your productivity hub</p>
           </div>
         </div>
 
-        {/* Right: User Info */}
         <div className="flex items-center gap-4">
           <div className="hidden sm:block text-right">
             <p className="text-sm font-medium">{user?.name || "User"}</p>
-            <p className="text-xs text-zinc-400">Active</p>
+            <p className="text-xs text-zinc-400">Online</p>
           </div>
+
+          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-sm font-semibold shadow">
+            {user?.name?.[0]?.toUpperCase() || "U"}
+          </div>
+
           <button
             onClick={logout}
             className="px-3 py-2 rounded-lg text-sm border border-zinc-700 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/40 transition"
@@ -47,13 +52,14 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* MAIN LAYOUT */}
+
+      {/* MAIN */}
       <div className="flex flex-1 overflow-hidden relative">
 
         {/* SIDEBAR */}
         <aside
-          className={`fixed md:relative z-30 inset-y-0 left-0 w-72 bg-zinc-900 border-r border-zinc-800 transform md:translate-x-0 transition-transform duration-300 ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          className={`fixed md:relative inset-y-0 left-0 w-72 bg-zinc-900/80 backdrop-blur border-r border-zinc-800 shadow-xl transform transition-transform duration-300 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           }`}
         >
           <div className="p-4 border-b border-zinc-800">
@@ -61,52 +67,66 @@ export default function Dashboard() {
               Projects
             </h2>
           </div>
-          <div className="flex-1 px-3 pb-4 overflow-y-auto">
-            <ProjectList select={(project) => { setSelectedProject(project); setSidebarOpen(false); }} />
+
+          <div className="px-3 pb-4 overflow-y-auto">
+            <ProjectList
+              select={(project) => {
+                setSelectedProject(project);
+                setSidebarOpen(false);
+              }}
+              selectedId={selectedProject?._id}
+            />
           </div>
         </aside>
 
-        {/* Overlay for mobile */}
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black/40 z-20 md:hidden"
             onClick={() => setSidebarOpen(false)}
-          ></div>
+          />
         )}
 
-        {/* CONTENT AREA */}
+        {/* CONTENT */}
         <main className="flex-1 overflow-y-auto p-6 md:ml-72 transition-all duration-300">
-          <div className="h-full rounded-2xl bg-zinc-900 border border-zinc-800 shadow-lg p-6 flex flex-col transition-all duration-300">
+          <div className="h-full rounded-2xl bg-zinc-900 border border-zinc-800 shadow-lg p-6 flex flex-col">
 
             {selectedProject ? (
               <>
-                {/* PROJECT HEADER */}
                 <div className="mb-4 flex items-center gap-3">
-                  {selectedProject?.logo ? (
+
+                  {selectedProject.logo ? (
                     <img
                       src={selectedProject.logo}
                       alt={selectedProject.name}
-                      className="h-10 w-10 rounded-lg object-cover transition-all duration-200"
+                      className="h-10 w-10 rounded-lg object-cover"
                     />
                   ) : (
-                    <div className="h-10 w-10 rounded-lg bg-indigo-600 flex items-center justify-center font-semibold text-white">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-semibold text-white shadow">
                       {selectedProject.name[0].toUpperCase()}
                     </div>
                   )}
-                  <h2 className="text-xl font-semibold">{selectedProject.name}</h2>
+
+                  <div>
+                    <h2 className="text-xl font-semibold">{selectedProject.name}</h2>
+                    <p className="text-xs text-zinc-400">Project workspace</p>
+                  </div>
                 </div>
 
                 <ProjectDetail project={selectedProject} />
               </>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-zinc-400 gap-3">
-                <div className="h-16 w-16 rounded-2xl bg-zinc-800 flex items-center justify-center text-3xl transition-all duration-200">
+
+                <div className="h-16 w-16 rounded-2xl bg-zinc-800 flex items-center justify-center text-3xl animate-pulse">
                   📁
                 </div>
+
                 <p className="text-lg font-medium">No project selected</p>
-                <p className="text-sm opacity-70 text-center">
-                  Select a project from the sidebar to start working
+
+                <p className="text-sm opacity-70 text-center max-w-xs">
+                  Select a project from the sidebar to start managing your tasks
                 </p>
+
               </div>
             )}
           </div>
@@ -115,3 +135,4 @@ export default function Dashboard() {
     </div>
   );
 }
+                                         
