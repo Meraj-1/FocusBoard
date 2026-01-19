@@ -11,22 +11,33 @@ export const signup = async (req, res, next) => {
     const userId = data.user._id || data.user.id;
     console.log("EMIT SIGNUP for user:", userId);
 
-    // Emit signup event
     authEvent.emit("signup", {
-      userId,
+      type: "signup",
+      userId: user._id,
+      sessionId: req.sessionID,
       ip: req.ip,
       userAgent: req.headers["user-agent"],
+      provider: "custom",
+      status: "success",
+      email: user.email,
+      roles: ["user"],
+      metadata: {
+        device: "desktop",
+        source: "website",
+      },
       timestamp: new Date(),
     });
 
-    // Auto-login after signup
-    authEvent.emit("login", {
-      userId,
-      ip: req.ip,
-      userAgent: req.headers["user-agent"],
-      timestamp: new Date(),
-    });
-
+    //  authEvent.emit("login", {
+    //   type: "login",
+    //   userId,
+    //   sessionId: req.sessionID,
+    //   ip: req.ip,
+    //   userAgent: req.headers["user-agent"],
+    //   provider: "custom",
+    //   status: "success",
+    //   timestamp: new Date(),
+    // });
     // Respond with user + token
     res.status(201).json(data);
   } catch (error) {
@@ -47,9 +58,13 @@ export const login = async (req, res, next) => {
     console.log("EMIT LOGIN for user:", userId);
 
     authEvent.emit("login", {
-      userId,
+      type: "login",
+      userId: user._id,
+      sessionId: req.sessionID,
       ip: req.ip,
       userAgent: req.headers["user-agent"],
+      provider: "custom",
+      status: "success",
       timestamp: new Date(),
     });
 
