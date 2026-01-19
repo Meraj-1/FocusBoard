@@ -9,8 +9,13 @@ authEvent.on("signup", async (event) => {
   try {
     console.log("SIGNUP EVENT RECEIVED:", event);
     await AuthLog.create({
-      userId: event.userId,
       type: "signup",
+      email: event.email,
+      userId: event.userId,
+      sessionId: event.sessionId,
+      // userAgent: event.headers,
+      provider: event.provider,
+      status: event.status,
       ip: event.ip,
       userAgent: event.userAgent,
       timestamp: event.timestamp,

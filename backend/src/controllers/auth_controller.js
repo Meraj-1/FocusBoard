@@ -7,39 +7,25 @@ export const signup = async (req, res, next) => {
   try {
     const data = await signupService(req.body);
 
-    // Ensure userId is correct
-    const userId = data.user._id || data.user.id;
+    const user = data.user; // ✅ DEFINE USER
+    const userId = user._id || user.id;
+
     console.log("EMIT SIGNUP for user:", userId);
 
     authEvent.emit("signup", {
       type: "signup",
-      userId: user._id,
-      sessionId: req.sessionID,
+      userId: userId,
+      email: user.email,
+      sessionId: req.sessionID || null,
       ip: req.ip,
       userAgent: req.headers["user-agent"],
       provider: "custom",
       status: "success",
-      email: user.email,
-      roles: ["user"],
-      metadata: {
-        device: "desktop",
-        source: "website",
-      },
-      timestamp: new Date(),
+      roles: user.roles,
+      metadata: { device: "desktop", source: "website" },
+      timestamp: new Date()
     });
 
-     authEvent.emit("login", {
-      type: "login",
-      userId,
-      sessionId: req.sessionID,
-      ip: req.ip,
-      userAgent: req.headers["user-agent"],
-      provider: "custom",
-      status: "success",
-      timestamp: new Date(),
-    });
-    
-    // Respond with user + token
     res.status(201).json(data);
   } catch (error) {
     if (error.message === "USER_ALREADY_EXISTS") {
