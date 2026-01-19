@@ -28,16 +28,17 @@ export const signup = async (req, res, next) => {
       timestamp: new Date(),
     });
 
-    //  authEvent.emit("login", {
-    //   type: "login",
-    //   userId,
-    //   sessionId: req.sessionID,
-    //   ip: req.ip,
-    //   userAgent: req.headers["user-agent"],
-    //   provider: "custom",
-    //   status: "success",
-    //   timestamp: new Date(),
-    // });
+     authEvent.emit("login", {
+      type: "login",
+      userId,
+      sessionId: req.sessionID,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+      provider: "custom",
+      status: "success",
+      timestamp: new Date(),
+    });
+    
     // Respond with user + token
     res.status(201).json(data);
   } catch (error) {
