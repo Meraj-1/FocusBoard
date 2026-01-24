@@ -50,7 +50,7 @@ export default function ProjectList({ select }) {
         )
       );
       setEditingId(null);
-      await api.put(`/projects/${projectId}`, { name: editName });
+      await api.put(`/api/projects/${projectId}/update`, { name: editName });
     } catch {
       setProjects(previous);
       setError("Failed to update project.");
