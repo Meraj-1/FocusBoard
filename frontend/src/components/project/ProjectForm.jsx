@@ -23,7 +23,7 @@ export default function ProjectForm({ refresh }) {
       formData.append("name", name.trim());
       if (logo) formData.append("logo", logo);
 
-      await api.post("/api/projects", formData);
+      await api.post("/api/projects/create", formData);
 
       setName("");
       setLogo(null);

@@ -2,6 +2,9 @@ import Project from "../models/project_model.js"
 
 
 export const createProject = async (req, res) => {
+    if (!req.body) {
+    return res.status(400).json({ message: "Request body missing" });
+  }
   try {
     const { name } = req.body;
 

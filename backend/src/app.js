@@ -4,8 +4,9 @@ import authRoutes from "./routes/auth_routes.js";
 import projectRoutes from "./routes/project_routes.js";
 
 const app = express();
+app.use(express.json()); // ⭐ THIS IS MUST
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json());
 
 app.use(
   cors({

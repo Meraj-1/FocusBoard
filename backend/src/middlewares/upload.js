@@ -1,32 +1,24 @@
 import multer from "multer";
+import fs from "fs";
 import path from "path";
 
-// storage config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/projects");
-  },
-  filename: (req, file, cb) => {
-    const unique =
-      Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      unique + path.extname(file.originalname)
-    );
-  },
-});
+const projectUploadPath = path.join("uploads", "projects");
 
-// file filter (only images)
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files allowed"), false);
-  }
-};
+// ensure folder exists
+if (!fs.existsSync(projectUploadPath)) {
+  fs.mkdirSync(projectUploadPath, { recursive: true });
+}
 
 export const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, projectUploadPath); // folder path
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const ext = path.extname(file.originalname);
+      cb(null, `${uniqueSuffix}${ext}`);
+    },
+  }),
+  limits: { fileSize: 1024 * 1024 }, // 1MB limit
 });
