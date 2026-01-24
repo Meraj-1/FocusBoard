@@ -2,11 +2,8 @@ import Project from "../models/project_model.js"
 
 
 export const createProject = async (req, res) => {
-    if (!req.body) {
-    return res.status(400).json({ message: "Request body missing" });
-  }
   try {
-    const { name } = req.body;
+    const name = req.body?.name;
 
     if (!name || !name.trim()) {
       return res.status(400).json({ message: "Project name required" });
@@ -26,6 +23,7 @@ export const createProject = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 export const getMyProjects = async (req, res) => {

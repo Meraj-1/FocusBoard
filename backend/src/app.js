@@ -2,11 +2,13 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth_routes.js";
 import projectRoutes from "./routes/project_routes.js";
+import path from "path";
+
 
 const app = express();
 app.use(express.json()); // ⭐ THIS IS MUST
 app.use(express.urlencoded({ extended: true }));
-
+app.use("/uploads", express.static("uploads"));
 
 app.use(
   cors({

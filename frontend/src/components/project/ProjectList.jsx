@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../api/api";
 import ProjectForm from "./ProjectForm";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 export default function ProjectList({ select }) {
   const [projects, setProjects] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -112,7 +114,7 @@ export default function ProjectList({ select }) {
             {/* LOGO */}
             {project.logo ? (
               <img
-                src={project.logo}
+                src={`${BACKEND_URL}${project.logo}`}
                 alt={project.name}
                 className="
                   h-9 w-9 rounded-lg
