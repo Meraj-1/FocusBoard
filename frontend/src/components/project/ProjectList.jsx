@@ -64,7 +64,7 @@ export default function ProjectList({ select }) {
 
     try {
       setProjects((prev) => prev.filter((p) => p._id !== projectId));
-      await api.delete(`/projects/${projectId}`);
+      await api.delete(`/api/projects/${projectId}/delete`);
     } catch {
       setProjects(previous);
       setError("Failed to delete project.");
