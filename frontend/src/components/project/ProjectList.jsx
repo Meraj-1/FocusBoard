@@ -13,7 +13,7 @@ export default function ProjectList({ select }) {
     try {
       setLoading(true);
       setError("");
-      const res = await api.get("/projects");
+      const res = await api.get("/api/projects/read");
       setProjects(res.data);
     } catch {
       setError("Failed to load projects.");
