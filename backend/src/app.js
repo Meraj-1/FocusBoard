@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth_routes.js";
 import projectRoutes from "./routes/project_routes.js";
+// import taskRoutes from "./routes/task_routes.js"
 import path from "path";
 
 
@@ -24,5 +25,6 @@ app.get("/", (req, res) => res.send("Backend is running"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+// app.use("/api/task", taskRoutes)
 
 export default app;

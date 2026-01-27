@@ -1,15 +1,18 @@
 import api from "../api/api";
 import { useState } from "react";
 
-export default function TaskItem({ task, refresh }) {
+export default function TaskItem({ task, projectId, refresh }) {
   const [loading, setLoading] = useState(false);
 
   const toggle = async () => {
     try {
       setLoading(true);
-      await api.put(`/tasks/${task._id}`, {
-        status: task.status === "done" ? "todo" : "done",
-      });
+      await api.put(
+        `/api/projects/${projectId}/tasks/${task._id}`,
+        {
+          status: task.status === "done" ? "todo" : "done",
+        }
+      );
       refresh();
     } catch (err) {
       console.error("Failed to toggle task:", err);
@@ -20,9 +23,12 @@ export default function TaskItem({ task, refresh }) {
 
   const remove = async () => {
     if (!confirm("Are you sure you want to delete this task?")) return;
+
     try {
       setLoading(true);
-      await api.delete(`/tasks/${task._id}`);
+      await api.delete(
+        `/api/projects/${projectId}/tasks/${task._id}`
+      );
       refresh();
     } catch (err) {
       console.error("Failed to delete task:", err);
@@ -40,41 +46,37 @@ export default function TaskItem({ task, refresh }) {
         ${loading ? "opacity-70 cursor-wait" : "cursor-pointer"}
       `}
     >
-      {/* Toggle Task Status */}
+      {/* Toggle */}
       <div
         onClick={toggle}
-        className="flex items-center gap-2 select-none truncate"
-        aria-label={`Mark task as ${task.status === "done" ? "todo" : "done"}`}
+        className="flex items-center gap-2 truncate"
       >
-        {/* Status Indicator */}
         <div
           className={`
-            h-5 w-5 rounded-full border-2 flex-shrink-0 transition-colors duration-200
-            ${task.status === "done" ? "bg-indigo-500 border-indigo-500" : "border-zinc-600"}
+            h-5 w-5 rounded-full border-2
+            ${task.status === "done"
+              ? "bg-indigo-500 border-indigo-500"
+              : "border-zinc-600"}
           `}
-        ></div>
+        />
 
-        {/* Task Title */}
         <span
           className={`
-            text-sm truncate transition-colors duration-200
-            ${task.status === "done" ? "line-through text-zinc-500" : "text-zinc-100"}
+            text-sm truncate
+            ${task.status === "done"
+              ? "line-through text-zinc-500"
+              : "text-zinc-100"}
           `}
-          title={task.title}
         >
           {task.title}
         </span>
       </div>
 
-      {/* Delete Button */}
+      {/* Delete */}
       <button
         onClick={remove}
-        className={`
-          text-red-400 hover:text-red-500 transition-colors
-          px-1 rounded flex-shrink-0
-        `}
-        aria-label="Delete task"
         disabled={loading}
+        className="text-red-400 hover:text-red-500"
       >
         ❌
       </button>
