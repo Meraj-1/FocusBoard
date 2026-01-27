@@ -21,7 +21,7 @@ router.delete("/:projectId/delete", authMiddleware, projectOwnerOnly, deleteProj
 router.get(
   "/:projectId/tasks",
   authMiddleware,
-  upload.single("logo"),
+  // upload.single("logo"),
   projectOwnerOnly,
   getTasks
 );
