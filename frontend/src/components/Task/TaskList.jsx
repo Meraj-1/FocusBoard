@@ -13,7 +13,7 @@ export default function TaskList({ projectId }) {
     try {
       setLoading(true);
       setError("");
-      const res = await api.get(`/projects/${projectId}/tasks`);
+      const res = await api.get(`/api/projects/${projectId}/tasks`);
       setTasks(res.data);
     } catch {
       setError("Failed to load tasks");

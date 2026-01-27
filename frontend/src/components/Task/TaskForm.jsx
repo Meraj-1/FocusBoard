@@ -16,6 +16,7 @@ export default function TaskForm({ projectId, refresh }) {
       setLoading(true);
       setError("");
       await api.post(`/api/projects/${projectId}/tasks`, { title: title.trim() });
+      // console.log(tasks)
       setTitle("");
       refresh();
     } catch {
