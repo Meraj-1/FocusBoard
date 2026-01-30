@@ -72,36 +72,43 @@ export default function ProjectList({ select }) {
   };
 
   return (
-<div className="space-y-5">
+<div className="space-y-6">
   <ProjectForm refresh={load} />
 
   {/* LOADING */}
   {loading && (
-    <p className="text-xs text-zinc-400 animate-pulse">
-      Loading projects…
-    </p>
+    <div className="flex items-center gap-2 text-xs text-zinc-400">
+      <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+      Loading projects
+    </div>
   )}
 
   {/* ERROR */}
   {error && (
-    <p className="
+    <div className="
       text-xs text-red-400
       bg-red-500/10 border border-red-500/20
       px-4 py-2 rounded-xl
     ">
       {error}
-    </p>
+    </div>
   )}
 
   {/* EMPTY STATE */}
   {projects.length === 0 && !loading && (
     <div className="
-      text-center text-sm text-zinc-500
-      py-10 border border-dashed border-zinc-700
-      rounded-2xl
+      relative overflow-hidden
+      rounded-2xl border border-zinc-800
+      bg-zinc-900/60
+      py-14 text-center
     ">
-      <p>No projects yet</p>
-      <p className="text-xs mt-1">Create your first one ✨</p>
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5" />
+      <p className="relative text-sm text-zinc-300 font-medium">
+        No projects created
+      </p>
+      <p className="relative mt-1 text-xs text-zinc-500">
+        Start by creating your first workspace
+      </p>
     </div>
   )}
 
@@ -110,46 +117,52 @@ export default function ProjectList({ select }) {
     <div
       key={project._id}
       className="
-        group relative flex items-center justify-between
-        px-4 py-4 rounded-2xl
+        group relative
+        rounded-2xl
         bg-zinc-900/70 backdrop-blur
         border border-zinc-800
-        hover:border-indigo-500/40
-        shadow-sm hover:shadow-lg
         transition-all
+        hover:border-indigo-500/40
       "
     >
-      {/* LEFT */}
+      {/* GLOW EDGE */}
+      <div className="
+        pointer-events-none absolute inset-0
+        rounded-2xl
+        opacity-0 group-hover:opacity-100
+        bg-gradient-to-r from-indigo-500/10 to-purple-500/10
+        transition
+      " />
+
       <div
-        className="flex items-center gap-4 flex-1 cursor-pointer"
+        className="relative flex items-center gap-4 px-4 py-4 cursor-pointer"
         onClick={() => select(project)}
       >
-        {/* LOGO / AVATAR */}
+        {/* AVATAR */}
         {project.logo ? (
           <img
             src={`${BACKEND_URL}${project.logo}`}
             alt={project.name}
             className="
-              h-10 w-10 rounded-xl
+              h-11 w-11 rounded-xl
               object-cover
               border border-zinc-700
             "
           />
         ) : (
-          <div
-            className="
-              h-10 w-10 rounded-xl
-              bg-gradient-to-br from-indigo-500 to-purple-600
-              text-white font-semibold text-sm
-              flex items-center justify-center
-            "
-          >
+          <div className="
+            h-11 w-11 rounded-xl
+            bg-gradient-to-br from-indigo-500 to-purple-600
+            text-white font-semibold
+            flex items-center justify-center
+            shadow-md
+          ">
             {project.name[0].toUpperCase()}
           </div>
         )}
 
-        {/* NAME / EDIT */}
-        <div className="flex-1">
+        {/* NAME / META */}
+        <div className="flex-1 min-w-0">
           {editingId === project._id ? (
             <input
               value={editName}
@@ -160,8 +173,9 @@ export default function ProjectList({ select }) {
               }}
               autoFocus
               className="
-                w-full bg-transparent
-                border-b border-zinc-600
+                w-full bg-zinc-950/60
+                px-2 py-1 rounded-md
+                border border-zinc-700
                 text-sm text-white
                 outline-none
                 focus:border-indigo-500
@@ -169,56 +183,65 @@ export default function ProjectList({ select }) {
             />
           ) : (
             <p className="
-              font-medium text-zinc-200
-              group-hover:text-white
-              transition
+              truncate font-medium
+              text-zinc-200 group-hover:text-white
             ">
               {project.name}
             </p>
           )}
 
-          {/* META */}
-          <p className="text-[11px] text-zinc-500">
-            Updated just now
-          </p>
+          {/* STATUS CHIP */}
+          <div className="mt-1 inline-flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <span className="text-[11px] text-zinc-500">
+              Active workspace
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* ACTIONS */}
-      <div className="
-        absolute right-3 top-1/2 -translate-y-1/2
-        flex gap-2
-        opacity-0 group-hover:opacity-100
-        transition
-      ">
-        <button
-          onClick={() => startEdit(project)}
-          title="Edit"
-          className="
-            h-8 w-8 rounded-lg
-            bg-zinc-800 hover:bg-indigo-500/20
-            text-zinc-400 hover:text-indigo-400
-            transition
-          "
-        >
-          ✏️
-        </button>
-        <button
-          onClick={() => remove(project._id)}
-          title="Delete"
-          className="
-            h-8 w-8 rounded-lg
-            bg-zinc-800 hover:bg-red-500/20
-            text-zinc-400 hover:text-red-400
-            transition
-          "
-        >
-          🗑
-        </button>
+        {/* ACTION DOCK */}
+        <div className="
+          flex items-center gap-1.5
+          opacity-0 group-hover:opacity-100
+          transition
+        ">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              startEdit(project);
+            }}
+            className="
+              h-9 w-9 rounded-xl
+              bg-zinc-800/70
+              hover:bg-indigo-500/20
+              text-zinc-400 hover:text-indigo-400
+              transition
+            "
+          >
+            ✎
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              remove(project._id);
+            }}
+            className="
+              h-9 w-9 rounded-xl
+              bg-zinc-800/70
+              hover:bg-red-500/20
+              text-zinc-400 hover:text-red-400
+              transition
+            "
+          >
+            ⌫
+          </button>
+        </div>
       </div>
     </div>
   ))}
 </div>
+
 
   );
 }
