@@ -116,6 +116,8 @@ export default function ProjectForm({ refresh }) {
   const [error, setError] = useState("");
   const firstLetter = name?.trim()?.[0]?.toUpperCase();
   const nameLength = name.trim().length;
+  const [holding, setHolding] = useState(false);
+  const canSubmit = name.trim().length > 0 && !loading;
 
   const submit = async (e) => {
     e.preventDefault();
