@@ -114,6 +114,8 @@ export default function ProjectForm({ refresh }) {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const firstLetter = name?.trim()?.[0]?.toUpperCase();
+  const nameLength = name.trim().length;
 
   const submit = async (e) => {
     e.preventDefault();
@@ -153,7 +155,7 @@ export default function ProjectForm({ refresh }) {
   };
 
   return (
-  <form
+<form
   onSubmit={submit}
   className="
     relative mb-6 space-y-5 p-5 rounded-3xl
@@ -172,28 +174,50 @@ export default function ProjectForm({ refresh }) {
   </p>
 
   {/* NAME INPUT */}
-  <input
-    value={name}
-    onChange={(e) => {
-      setName(e.target.value);
-      if (error) setError("");
-    }}
-    placeholder="Project name"
-    disabled={loading}
-    className="
-      w-full px-4 py-2.5 rounded-xl
-      bg-zinc-950/80
-      border border-zinc-800
-      text-sm text-white placeholder:text-zinc-500
-      outline-none
-      focus:border-indigo-500
-      focus:ring-2 focus:ring-indigo-500/30
-      disabled:opacity-60
-      transition-all
-    "
-  />
+  <div className="space-y-2">
+    <input
+      value={name}
+      onChange={(e) => {
+        setName(e.target.value);
+        if (error) setError("");
+      }}
+      placeholder="Project name"
+      disabled={loading}
+      className="
+        w-full px-4 py-2.5 rounded-xl
+        bg-zinc-950/80
+        border border-zinc-800
+        text-sm text-white placeholder:text-zinc-500
+        outline-none
+        focus:border-indigo-500
+        focus:ring-2 focus:ring-indigo-500/30
+        disabled:opacity-60
+        transition-all
+      "
+    />
 
-  {/* LOGO UPLOAD */}
+    {/* NAME INTELLIGENCE BAR */}
+    <div className="h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
+      <div
+        className={`
+          h-full transition-all
+          ${nameLength === 0 && "w-0"}
+          ${nameLength > 0 && nameLength < 3 && "w-1/4 bg-zinc-500"}
+          ${nameLength >= 3 && nameLength <= 20 && "w-3/4 bg-indigo-500"}
+          ${nameLength > 20 && "w-full bg-amber-500"}
+        `}
+      />
+    </div>
+
+    <p className="text-[10px] text-zinc-500">
+      {nameLength === 0 && "Give your project a short, clear name"}
+      {nameLength > 0 && nameLength < 3 && "Too short"}
+      {nameLength >= 3 && nameLength <= 20 && "Looks perfect"}
+      {nameLength > 20 && "Too long, consider shortening"}
+    </p>
+  </div>
+
+  {/* LOGO UPLOAD / SMART AVATAR */}
   <label
     className="
       group relative flex items-center justify-between gap-4
@@ -208,14 +232,24 @@ export default function ProjectForm({ refresh }) {
     "
   >
     <div className="flex items-center gap-3">
+      {/* AUTO AVATAR */}
       <div className="
-        flex h-8 w-8 items-center justify-center
-        rounded-lg bg-zinc-800/70
-        group-hover:bg-indigo-500/20
-        transition
+        flex h-10 w-10 items-center justify-center
+        rounded-xl
+        bg-gradient-to-br from-indigo-500 to-purple-600
+        text-white font-semibold text-sm
       ">
-        <ImagePlus size={15} className="text-zinc-400 group-hover:text-indigo-400" />
+        {preview ? (
+          <img
+            src={preview}
+            alt="Preview"
+            className="h-full w-full rounded-xl object-cover"
+          />
+        ) : (
+          firstLetter || "+"
+        )}
       </div>
+
       <span className="leading-tight">
         {preview ? "Change logo" : "Upload logo"}
         <span className="block text-[10px] text-zinc-500">
@@ -223,18 +257,6 @@ export default function ProjectForm({ refresh }) {
         </span>
       </span>
     </div>
-
-    {preview && (
-      <img
-        src={preview}
-        alt="Preview"
-        className="
-          h-10 w-10 rounded-xl object-cover
-          border border-zinc-700
-          shadow-sm
-        "
-      />
-    )}
 
     <input
       type="file"
@@ -247,7 +269,7 @@ export default function ProjectForm({ refresh }) {
   {/* SUBMIT */}
   <button
     type="submit"
-    disabled={loading}
+    disabled={loading || !name.trim()}
     className="
       relative w-full flex items-center justify-center gap-2
       text-sm font-semibold rounded-2xl py-3
@@ -256,7 +278,7 @@ export default function ProjectForm({ refresh }) {
       shadow-lg shadow-indigo-500/25
       hover:shadow-xl hover:shadow-indigo-500/40
       active:scale-[0.97]
-      disabled:opacity-60 disabled:shadow-none
+      disabled:opacity-50 disabled:shadow-none
       transition-all
     "
   >
@@ -265,8 +287,10 @@ export default function ProjectForm({ refresh }) {
         <Loader2 size={16} className="animate-spin" />
         Creating…
       </>
+    ) : name ? (
+      `Create “${name.trim()}”`
     ) : (
-      "Create Project"
+      "Name your project"
     )}
   </button>
 
@@ -283,6 +307,7 @@ export default function ProjectForm({ refresh }) {
     </div>
   )}
 </form>
+
 
   );
 }
