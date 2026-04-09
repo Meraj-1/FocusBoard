@@ -9,6 +9,11 @@ export const createProject = async (req, res) => {
       return res.status(400).json({ message: "Project name required" });
     }
 
+     if (!req.user) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+
     const project = await Project.create({
       name: name.trim(),
       owner: req.user._id,

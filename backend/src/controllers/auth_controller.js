@@ -46,7 +46,7 @@ export const login = async (req, res, next) => {
 
     authEvent.emit("login", {
       type: "login",
-      userId: user._id,
+      userId: data.user._id || data.user.id,
       sessionId: req.sessionID,
       ip: req.ip,
       userAgent: req.headers["user-agent"],

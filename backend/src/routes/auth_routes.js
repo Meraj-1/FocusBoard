@@ -8,6 +8,4 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", authMiddleware, logout);
 
-
-
 export default router;
